@@ -73,6 +73,7 @@ class Configuration(object):
         self.load_addon_packages(config_data)
         self.load_sanitizers(config_data)
         self.load_dump_extra_parameters(config_data)
+        self.load_random_seed(config_data)
 
     def load_dump_extra_parameters(self, config_data):
         """
@@ -372,3 +373,42 @@ class Configuration(object):
         """
         sanitizer_callback = self.get_sanitizer_for(table_name, column_name)
         return sanitizer_callback(value) if sanitizer_callback else value
+
+    def load_random_seed(self, config_data):
+        """
+        Loads the random seed value. This should be an int or a string
+        representation of an int. If omitted, then rely on the default
+        logic for random.seed (i.e., base it on the system time).
+
+        :param config_data: Already parsed configuration data, as dictionary.
+        :type config_data: dict[str,any]
+        """
+        section_config = config_data.get("config")
+        if not isinstance(section_config, dict):
+            if section_config is None:
+                return
+            raise ConfigurationError(
+                "'config' is %s instead of dict" % (
+                    type(section_config),
+                ),
+            )
+
+        self.random_seed = section_config.get("random_seed")
+        if self.random_seed is None:
+            return
+        if isinstance(self.random_seed, int):
+            return
+        if isinstance(self.random_seed, str):
+            try:
+                self.random_seed = int(self.random_seed, 0)
+                return
+            except ValueError:
+                ...
+        try:
+            self.random_seed = int(self.random_seed)
+            return
+        except (ValueError, TypeError):
+            ...
+        raise ConfigurationError(
+            "'config.random_seed' could not be converted to an integer"
+        )
