@@ -265,10 +265,16 @@ def test_load_random_seed():
     config.load_random_seed({"config": {}})
     assert config.random_seed is None
 
-    for test_seed in ["test", True, [True]]:
-        with pytest.raises(ConfigurationError):
-            config.load_random_seed({"config": {"random_seed": test_seed}})
+    with pytest.raises(ConfigurationError):
+        config.load_random_seed({"config": {"random_seed": "test"}})
+    with pytest.raises(ConfigurationError):
+        config.load_random_seed({"config": {"random_seed": True}})
+    with pytest.raises(ConfigurationError):
+        config.load_random_seed({"config": {"random_seed": [0]}})
 
-    for test_seed in [1, "2"]:
-        config.load_random_seed({"config": {"random_seed": test_seed}})
-        assert config.random_seed == int(test_seed)
+    config.load_random_seed({"config": {"random_seed": 1}})
+    assert config.random_seed == 1
+    config.load_random_seed({"config": {"random_seed": "2"}})
+    assert config.random_seed == 2
+    config.load_random_seed({"config": {"random_seed": "0x3"}})
+    assert config.random_seed == 3
