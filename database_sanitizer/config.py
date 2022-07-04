@@ -31,6 +31,7 @@ class Configuration(object):
         self.addon_packages = []
         self.mysqldump_params = []
         self.pg_dump_params = []
+        self.random_seed = None
 
     @classmethod
     def from_file(cls, filename):
