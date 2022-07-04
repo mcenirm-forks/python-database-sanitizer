@@ -259,16 +259,16 @@ def test_sanitize():
 def test_load_random_seed():
     config = Configuration()
 
-    config.load_addon_packages({})
+    config.load_random_seed({})
     assert config.random_seed is None
 
-    config.load_addon_packages({"config": {}})
+    config.load_random_seed({"config": {}})
     assert config.random_seed is None
 
     for test_seed in ["test", True, [True]]:
         with pytest.raises(ConfigurationError):
-            config.load_addon_packages({"config": {"random_seed": test_seed}})
+            config.load_random_seed({"config": {"random_seed": test_seed}})
 
     for test_seed in [1, "2"]:
-        config.load_addon_packages({"config": {"random_seed": test_seed}})
+        config.load_random_seed({"config": {"random_seed": test_seed}})
         assert config.random_seed == int(test_seed)
