@@ -268,13 +268,15 @@ def test_load_random_seed():
     with pytest.raises(ConfigurationError):
         config.load_random_seed({"config": {"random_seed": "test"}})
     with pytest.raises(ConfigurationError):
-        config.load_random_seed({"config": {"random_seed": True}})
-    with pytest.raises(ConfigurationError):
         config.load_random_seed({"config": {"random_seed": [0]}})
 
-    config.load_random_seed({"config": {"random_seed": 1}})
+    config.load_random_seed({"config": {"random_seed": 0}})
+    assert config.random_seed == 0
+    config.load_random_seed({"config": {"random_seed": True}})
     assert config.random_seed == 1
     config.load_random_seed({"config": {"random_seed": "2"}})
     assert config.random_seed == 2
     config.load_random_seed({"config": {"random_seed": "0x3"}})
     assert config.random_seed == 3
+    config.load_random_seed({"config": {"random_seed": 4.1}})
+    assert config.random_seed == 4
