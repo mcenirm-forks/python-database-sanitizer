@@ -54,6 +54,15 @@ would be something like this:
 $ database-sanitizer postgres://user:password@host/database
 ```
 
+For PostgreSQL, an existing script-format (i.e., plain-text SQL) dump
+file can be fed to the sanitizer on _stdin_ by using the URL
+`postgres:-`:
+
+```bash
+$ pg_dump --encoding=utf-8 --quote-all-identifiers --dbname postgres://user:password@host/database > db.sql
+$ cat db.sql | database-sanitizer postgres:-
+```
+
 However, unless an configuration file is provided, no sanitation will be
 performed on the retrieved database dump, which leads us to the next
 section which will be...

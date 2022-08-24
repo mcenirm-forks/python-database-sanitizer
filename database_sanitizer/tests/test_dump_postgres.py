@@ -71,6 +71,19 @@ def test_sanitize():
     assert "2\t2018-01-02 00:00:00\tSanitized" in dump_output_lines
 
 
+def test_sanitize_stdin():
+    url = urlparse.urlparse("postgres:-")
+    config = Configuration()
+    config.sanitizers["test.notes"] = lambda value: "Sanitized"
+
+    with mock.patch("sys.stdin", io.StringIO(MOCK_PG_DUMP_OUTPUT.decode("utf-8"))):
+        dump_output_lines = list(sanitize(url, config))
+
+    assert "--- Fake PostgreSQL database dump" in dump_output_lines
+    assert "--- Final line after `COPY` statement" in dump_output_lines
+    assert "2\t2018-01-02 00:00:00\tSanitized" in dump_output_lines
+
+
 def test_skip_table_rows():
     url = urlparse.urlparse("postgres://localhost/test")
     config = Configuration()
